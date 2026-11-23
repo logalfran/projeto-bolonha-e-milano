@@ -1,0 +1,38 @@
+@startuml
+title Bolonha e Milano - Casos de Uso - Etapa 3
+
+left to right direction
+
+' O ator representa a pessoa que utiliza o jogo.
+actor "Jogador" as Jogador
+
+' O retangulo representa o sistema.
+rectangle "Sistema Bolonha e Milano" {
+
+    usecase "Iniciar novo jogo" as UC1
+    usecase "Consultar status da cidade" as UC2
+    usecase "Acessar mercado" as UC3
+
+    usecase "Comprar graos" as UC4
+    usecase "Vender graos" as UC5
+    usecase "Comprar terras" as UC6
+    usecase "Vender terras" as UC7
+
+    usecase "Consultar informacoes do jogo" as UC8
+    usecase "Sair do jogo" as UC9
+}
+
+' Acoes que o jogador pode realizar.
+Jogador --> UC1
+Jogador --> UC2
+Jogador --> UC3
+Jogador --> UC8
+Jogador --> UC9
+
+' Negociacoes disponiveis dentro do mercado.
+UC4 ..> UC3 : <<extend>>
+UC5 ..> UC3 : <<extend>>
+UC6 ..> UC3 : <<extend>>
+UC7 ..> UC3 : <<extend>>
+
+@enduml

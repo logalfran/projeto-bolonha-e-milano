@@ -1,124 +1,225 @@
-
 import java.util.Scanner;
 
-// Controla a interacao do jogador com o jogo.
 public class Menu {
 
+    // Scanner lê as informações digitadas pelo jogador.
     private Scanner scanner = new Scanner(System.in);
+
+    // Controla se o programa continua funcionando.
     private boolean emExecucao = true;
 
-    // Guardam os objetos da partida atual.
+    // Objetos utilizados durante a partida.
     private Jogador jogador;
     private Cidade cidade;
+    private Mercado mercado = new Mercado();
 
+    // Inicia o laço principal do jogo.
     public void executar() {
-        System.out.println("Bem-vindo ao Bolonha e Milano!");
-
-        // Repete o menu ate o jogador escolher sair.
         while (emExecucao) {
+            exibirOpcoes();
+            int opcao = lerOpcao();
+            processarOpcao(opcao);
+        }
 
-            System.out.println("\n===== MENU PRINCIPAL =====");
-            System.out.println("1 - Novo jogo");
-            System.out.println("2 - Ver status da cidade");
-            System.out.println("3 - Mercado");
-            System.out.println("4 - Agricultura");
-            System.out.println("5 - Governo");
-            System.out.println("6 - Construcoes");
-            System.out.println("7 - Sobre o jogo");
-            System.out.println("0 - Sair");
-            System.out.print("Escolha uma opcao: ");
+        scanner.close();
+    }
 
-            String entrada = scanner.nextLine();
+    // Exibe as opções disponíveis.
+    private void exibirOpcoes() {
+        System.out.println("\n===== BOLONHA E MILANO =====");
+        System.out.println("1 - Novo jogo");
+        System.out.println("2 - Ver status da cidade");
+        System.out.println("3 - Mercado");
+        System.out.println("6 - Construcoes (futura etapa)");
+        System.out.println("7 - Sobre o jogo");
+        System.out.println("0 - Sair");
+        System.out.print("Escolha uma opcao: ");
+    }
 
-            switch (entrada) {
-                case "1":
-                    novoJogo();
+    // Lê um número inteiro sem encerrar o jogo
+    // caso o usuário digite letras.
+    private int lerOpcao() {
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    // Direciona cada opção para o método correspondente.
+    private void processarOpcao(int opcao) {
+        switch (opcao) {
+            case 1:
+                iniciarNovoJogo();
+                break;
+
+            case 2:
+                exibirStatus();
+                break;
+
+            case 3:
+                abrirMercado();
+                break;
+
+            case 6:
+                System.out.println("Disponivel em outra etapa.");
+                break;
+
+            case 7:
+                exibirSobre();
+                break;
+
+            case 0:
+                emExecucao = false;
+                System.out.println("Obrigado por jogar!");
+                break;
+
+            default:
+                System.out.println("Opcao invalida!");
+        }
+    }
+
+    // Cria o jogador e a cidade.
+    private void iniciarNovoJogo() {
+        System.out.print("Digite seu nome: ");
+        String nome = scanner.nextLine().trim();
+
+        System.out.print("Digite o nome da cidade: ");
+        String nomeCidade = scanner.nextLine().trim();
+
+        if (nome.isEmpty() || nomeCidade.isEmpty()) {
+            System.out.println("Os nomes nao podem ficar vazios.");
+            return;
+        }
+
+        jogador = new Jogador(nome);
+        cidade = new Cidade(nomeCidade, jogador);
+
+        System.out.println("\nJogo iniciado com sucesso!");
+        cidade.exibirStatus();
+    }
+
+    // Mostra o status ou avisa se não há partida.
+    private void exibirStatus() {
+        if (cidade == null) {
+            System.out.println("Inicie um novo jogo primeiro.");
+        } else {
+            cidade.exibirStatus();
+        }
+    }
+
+    // Submenu do mercado: repete até escolher voltar.
+    private void abrirMercado() {
+        if (cidade == null) {
+            System.out.println("Inicie um novo jogo primeiro.");
+            return;
+        }
+
+        boolean noMercado = true;
+
+        while (noMercado) {
+            System.out.println("\n===== MERCADO =====");
+            System.out.println("Florins: " + cidade.getFlorins());
+            System.out.println("Graos: " + cidade.getGraos());
+            System.out.println("Terras: " + cidade.getTerras());
+
+            System.out.println("Preco do grao: "
+                + mercado.getPrecoGrao() + " florins");
+            System.out.println("Preco da terra: "
+                + mercado.getPrecoTerra() + " florins");
+
+            System.out.println("\n1 - Comprar graos");
+            System.out.println("2 - Vender graos");
+            System.out.println("3 - Comprar terras");
+            System.out.println("4 - Vender terras");
+            System.out.println("0 - Voltar");
+            System.out.print("Escolha: ");
+
+            int opcao = lerOpcao();
+
+            switch (opcao) {
+                case 1:
+                    comprarGraos();
                     break;
-
-                case "2":
-                    if (verificarPartida()) {
-                        mostrarStatus();
-                    }
+                case 2:
+                    venderGraos();
                     break;
-
-                case "3":
-                case "4":
-                case "5":
-                case "6":
-                    if (verificarPartida()) {
-                        System.out.println(
-                            "Funcionalidade sera implementada nas proximas etapas."
-                        );
-                    }
+                case 3:
+                    comprarTerras();
                     break;
-
-                case "7":
-                    System.out.println(
-                        "Bolonha e Milano e um jogo de estrategia economica"
-                    );
-                    System.out.println(
-                        "e politica ambientado na Italia medieval."
-                    );
+                case 4:
+                    venderTerras();
                     break;
-
-                case "0":
-                    emExecucao = false;
-                    System.out.println("Encerrando o jogo...");
+                case 0:
+                    noMercado = false;
                     break;
-
                 default:
                     System.out.println("Opcao invalida!");
             }
         }
     }
 
-    // Cria o jogador e a cidade com seus valores iniciais.
-    private void novoJogo() {
-        System.out.print("Digite seu nome: ");
-        String nome = scanner.nextLine().trim();
+    // Lê e valida a quantidade de uma negociação.
+    private int lerQuantidade() {
+        System.out.print("Digite a quantidade: ");
+        int quantidade = lerOpcao();
 
-        if (nome.isEmpty()) {
-            nome = "Jogador 1";
+        if (quantidade <= 0) {
+            System.out.println("Digite um numero inteiro positivo.");
+            return -1;
         }
 
-        System.out.print("Digite o nome da cidade: ");
-        String nomeCidade = scanner.nextLine().trim();
-
-        if (nomeCidade.isEmpty()) {
-            nomeCidade = "Bolonha";
-        }
-
-        // Cria os objetos e associa a cidade ao jogador.
-        jogador = new Jogador(nome);
-        cidade = new Cidade(nomeCidade, jogador);
-
-        System.out.println("\nJogo iniciado com sucesso!");
-        mostrarStatus();
+        return quantidade;
     }
 
-    // Impede acessar funcionalidades antes de iniciar o jogo.
-    private boolean verificarPartida() {
-        if (jogador == null || cidade == null) {
-            System.out.println("Inicie um novo jogo primeiro!");
-            return false;
+    // Os quatro métodos seguintes chamam o Mercado.
+    // As regras econômicas ficam na classe Mercado,
+    // e não na classe Menu.
+
+    private void comprarGraos() {
+        int quantidade = lerQuantidade();
+
+        if (mercado.comprarGraos(cidade, quantidade)) {
+            System.out.println("Graos comprados com sucesso!");
+        } else {
+            System.out.println("Compra nao realizada.");
         }
-        return true;
     }
 
-    // Consulta os recursos usando os getters da Cidade.
-    private void mostrarStatus() {
-        System.out.println("\n===== STATUS DA CIDADE =====");
-        System.out.println("Jogador: " + jogador.getNome());
-        System.out.println("Titulo: " + jogador.getTitulo());
-        System.out.println("Cidade: " + cidade.getNome());
-        System.out.println("Ano: " + cidade.getAnoAtual());
-        System.out.println("Florins: " + cidade.getFlorins());
-        System.out.println("Terras: " + cidade.getTerras());
-        System.out.println("Graos: " + cidade.getGraos());
-        System.out.println("Servos: " + cidade.getServos());
-        System.out.println("Imposto: " + cidade.getTaxaImposto() + "%");
-        System.out.println("Justica: " + cidade.getNivelJustica());
-        System.out.println("Soldados: " + cidade.getSoldados());
-        System.out.println("Construcoes: " + cidade.getConstrucoes());
+    private void venderGraos() {
+        int quantidade = lerQuantidade();
+
+        if (mercado.venderGraos(cidade, quantidade)) {
+            System.out.println("Graos vendidos com sucesso!");
+        } else {
+            System.out.println("Venda nao realizada.");
+        }
+    }
+
+    private void comprarTerras() {
+        int quantidade = lerQuantidade();
+
+        if (mercado.comprarTerras(cidade, quantidade)) {
+            System.out.println("Terras compradas com sucesso!");
+        } else {
+            System.out.println("Compra nao realizada.");
+        }
+    }
+
+    private void venderTerras() {
+        int quantidade = lerQuantidade();
+
+        if (mercado.venderTerras(cidade, quantidade)) {
+            System.out.println("Terras vendidas com sucesso!");
+        } else {
+            System.out.println("Venda nao realizada.");
+        }
+    }
+
+    // Apresenta informações sobre o projeto.
+    private void exibirSobre() {
+        System.out.println("\nBolonha e Milano");
+        System.out.println("Jogo de estrategia economica medieval.");
+        System.out.println("Etapa 3: Economia e Mercado.");
     }
 }

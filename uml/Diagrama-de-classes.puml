@@ -1,0 +1,89 @@
+@startuml
+title Bolonha e Milano - Diagrama de Classes - Etapa 3
+
+skinparam classAttributeIconSize 0
+
+class Main {
+    + {static} main(args: String[]): void
+}
+
+class Menu {
+    - scanner: Scanner
+    - emExecucao: boolean
+    - jogador: Jogador
+    - cidade: Cidade
+    - mercado: Mercado
+
+    + executar(): void
+    - exibirOpcoes(): void
+    - lerOpcao(): int
+    - processarOpcao(opcao: int): void
+    - iniciarNovoJogo(): void
+    - exibirStatus(): void
+    - abrirMercado(): void
+    - lerQuantidade(): int
+    - comprarGraos(): void
+    - venderGraos(): void
+    - comprarTerras(): void
+    - venderTerras(): void
+    - exibirSobre(): void
+}
+
+class Jogador {
+    - nome: String
+    - titulo: String
+
+    + Jogador(nome: String)
+    + getNome(): String
+    + getTitulo(): String
+    + setTitulo(titulo: String): void
+}
+
+class Cidade {
+    - nome: String
+    - anoAtual: int
+    - dono: Jogador
+    - florins: int
+    - terras: int
+    - graos: int
+
+    + Cidade(nome: String, dono: Jogador)
+    + getNome(): String
+    + getAnoAtual(): int
+    + getDono(): Jogador
+    + getFlorins(): int
+    + getTerras(): int
+    + getGraos(): int
+    + avancarAno(): void
+    + adicionarFlorins(qtd: int): void
+    + removerFlorins(qtd: int): boolean
+    + adicionarTerras(qtd: int): void
+    + removerTerras(qtd: int): boolean
+    + adicionarGraos(qtd: int): void
+    + removerGraos(qtd: int): boolean
+    + exibirStatus(): void
+}
+
+class Mercado {
+    - {static} PRECO_GRAO: int
+    - {static} PRECO_TERRA: int
+
+    + getPrecoGrao(): int
+    + getPrecoTerra(): int
+    + comprarGraos(cidade: Cidade, qtd: int): boolean
+    + venderGraos(cidade: Cidade, qtd: int): boolean
+    + comprarTerras(cidade: Cidade, qtd: int): boolean
+    + venderTerras(cidade: Cidade, qtd: int): boolean
+}
+
+' Relacionamentos entre as classes.
+' As setas mostram como os objetos se relacionam.
+
+Main ..> Menu : inicia
+Menu --> Jogador : controla
+Menu --> Cidade : administra
+Menu --> Mercado : utiliza
+Cidade --> Jogador : governante
+Mercado ..> Cidade : negocia recursos
+
+@enduml

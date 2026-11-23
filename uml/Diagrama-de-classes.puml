@@ -1,5 +1,5 @@
 @startuml
-title Bolonha e Milano - Diagrama de Classes - Etapa 3
+title Bolonha e Milano - Diagrama de Classes - Etapa 4
 
 skinparam classAttributeIconSize 0
 
@@ -13,11 +13,13 @@ class Menu {
     - jogador: Jogador
     - cidade: Cidade
     - mercado: Mercado
+    - agricultura: Agricultura
 
     + executar(): void
     - exibirOpcoes(): void
     - lerOpcao(): int
     - processarOpcao(opcao: int): void
+    - verificarPartida(): boolean
     - iniciarNovoJogo(): void
     - exibirStatus(): void
     - abrirMercado(): void
@@ -26,6 +28,9 @@ class Menu {
     - venderGraos(): void
     - comprarTerras(): void
     - venderTerras(): void
+    - abrirAgricultura(): void
+    - colher(): void
+    - distribuirAlimentos(): void
     - exibirSobre(): void
 }
 
@@ -46,6 +51,7 @@ class Cidade {
     - florins: int
     - terras: int
     - graos: int
+    - servos: int
 
     + Cidade(nome: String, dono: Jogador)
     + getNome(): String
@@ -54,6 +60,7 @@ class Cidade {
     + getFlorins(): int
     + getTerras(): int
     + getGraos(): int
+    + getServos(): int
     + avancarAno(): void
     + adicionarFlorins(qtd: int): void
     + removerFlorins(qtd: int): boolean
@@ -61,6 +68,8 @@ class Cidade {
     + removerTerras(qtd: int): boolean
     + adicionarGraos(qtd: int): void
     + removerGraos(qtd: int): boolean
+    + adicionarServos(qtd: int): void
+    + removerServos(qtd: int): boolean
     + exibirStatus(): void
 }
 
@@ -76,14 +85,27 @@ class Mercado {
     + venderTerras(cidade: Cidade, qtd: int): boolean
 }
 
-' Relacionamentos entre as classes.
-' As setas mostram como os objetos se relacionam.
+class Agricultura {
+    - {static} HECTARES_POR_SERVO: int
+    - {static} RENDIMENTO_POR_HECTARE: int
+    - {static} SERVOS_POR_GRAO: int
+    - {static} CRESCIMENTO_PERCENTUAL: int
+    - {static} PERCENTUAL_MINIMO: int
+    - {static} PERCENTUAL_MAXIMO: int
 
+    + processarColheita(cidade: Cidade): void
+    + distribuirAlimentos(cidade: Cidade, percentual: int): boolean
+}
+
+' Relacionamentos entre as classes
 Main ..> Menu : inicia
 Menu --> Jogador : controla
 Menu --> Cidade : administra
 Menu --> Mercado : utiliza
+Menu --> Agricultura : utiliza
+
 Cidade --> Jogador : governante
 Mercado ..> Cidade : negocia recursos
+Agricultura ..> Cidade : cultiva e alimenta
 
 @enduml

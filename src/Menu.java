@@ -2,18 +2,21 @@ import java.util.Scanner;
 
 public class Menu {
 
-    // Scanner lê as informações digitadas pelo jogador.
+    // Lê os comandos digitados pelo jogador.
     private Scanner scanner = new Scanner(System.in);
 
-    // Controla se o programa continua funcionando.
+    // Mantém o jogo funcionando até escolher sair.
     private boolean emExecucao = true;
 
-    // Objetos utilizados durante a partida.
+    // Objetos que representam a partida.
     private Jogador jogador;
     private Cidade cidade;
-    private Mercado mercado = new Mercado();
 
-    // Inicia o laço principal do jogo.
+    // Cada classe cuida de uma parte das regras.
+    private Mercado mercado = new Mercado();
+    private Agricultura agricultura = new Agricultura();
+
+    // Inicia o menu principal.
     public void executar() {
         while (emExecucao) {
             exibirOpcoes();
@@ -24,20 +27,20 @@ public class Menu {
         scanner.close();
     }
 
-    // Exibe as opções disponíveis.
     private void exibirOpcoes() {
         System.out.println("\n===== BOLONHA E MILANO =====");
         System.out.println("1 - Novo jogo");
         System.out.println("2 - Ver status da cidade");
         System.out.println("3 - Mercado");
+        System.out.println("4 - Agricultura");
+        System.out.println("5 - Governo (proxima etapa)");
         System.out.println("6 - Construcoes (futura etapa)");
         System.out.println("7 - Sobre o jogo");
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opcao: ");
     }
 
-    // Lê um número inteiro sem encerrar o jogo
-    // caso o usuário digite letras.
+    // Evita erros caso o usuário digite letras.
     private int lerOpcao() {
         try {
             return Integer.parseInt(scanner.nextLine().trim());
@@ -46,50 +49,62 @@ public class Menu {
         }
     }
 
-    // Direciona cada opção para o método correspondente.
+    // Direciona o jogador à funcionalidade escolhida.
     private void processarOpcao(int opcao) {
         switch (opcao) {
             case 1:
                 iniciarNovoJogo();
                 break;
-
             case 2:
                 exibirStatus();
                 break;
-
             case 3:
                 abrirMercado();
                 break;
-
-            case 6:
-                System.out.println("Disponivel em outra etapa.");
+            case 4:
+                abrirAgricultura();
                 break;
-
+            case 5:
+            case 6:
+                if (verificarPartida()) {
+                    System.out.println("Disponivel em outra etapa.");
+                }
+                break;
             case 7:
                 exibirSobre();
                 break;
-
             case 0:
                 emExecucao = false;
                 System.out.println("Obrigado por jogar!");
                 break;
-
             default:
                 System.out.println("Opcao invalida!");
         }
     }
 
-    // Cria o jogador e a cidade.
+    // Confere se existe uma partida em andamento.
+    private boolean verificarPartida() {
+        if (cidade == null) {
+            System.out.println("Inicie um novo jogo primeiro!");
+            return false;
+        }
+        return true;
+    }
+
+    // Cria um jogador e uma cidade.
     private void iniciarNovoJogo() {
         System.out.print("Digite seu nome: ");
         String nome = scanner.nextLine().trim();
 
+        if (nome.isEmpty()) {
+            nome = "Jogador 1";
+        }
+
         System.out.print("Digite o nome da cidade: ");
         String nomeCidade = scanner.nextLine().trim();
 
-        if (nome.isEmpty() || nomeCidade.isEmpty()) {
-            System.out.println("Os nomes nao podem ficar vazios.");
-            return;
+        if (nomeCidade.isEmpty()) {
+            nomeCidade = "Bolonha";
         }
 
         jogador = new Jogador(nome);
@@ -99,19 +114,16 @@ public class Menu {
         cidade.exibirStatus();
     }
 
-    // Mostra o status ou avisa se não há partida.
     private void exibirStatus() {
-        if (cidade == null) {
-            System.out.println("Inicie um novo jogo primeiro.");
-        } else {
+        if (verificarPartida()) {
             cidade.exibirStatus();
         }
     }
 
-    // Submenu do mercado: repete até escolher voltar.
+    // ===== MERCADO - ETAPA 3 =====
+
     private void abrirMercado() {
-        if (cidade == null) {
-            System.out.println("Inicie um novo jogo primeiro.");
+        if (!verificarPartida()) {
             return;
         }
 
@@ -122,13 +134,12 @@ public class Menu {
             System.out.println("Florins: " + cidade.getFlorins());
             System.out.println("Graos: " + cidade.getGraos());
             System.out.println("Terras: " + cidade.getTerras());
-
             System.out.println("Preco do grao: "
-                + mercado.getPrecoGrao() + " florins");
+                    + mercado.getPrecoGrao());
             System.out.println("Preco da terra: "
-                + mercado.getPrecoTerra() + " florins");
+                    + mercado.getPrecoTerra());
 
-            System.out.println("\n1 - Comprar graos");
+            System.out.println("1 - Comprar graos");
             System.out.println("2 - Vender graos");
             System.out.println("3 - Comprar terras");
             System.out.println("4 - Vender terras");
@@ -159,67 +170,131 @@ public class Menu {
         }
     }
 
-    // Lê e valida a quantidade de uma negociação.
+    // Lê uma quantidade positiva.
     private int lerQuantidade() {
         System.out.print("Digite a quantidade: ");
         int quantidade = lerOpcao();
 
         if (quantidade <= 0) {
-            System.out.println("Digite um numero inteiro positivo.");
+            System.out.println("Quantidade invalida!");
             return -1;
         }
 
         return quantidade;
     }
 
-    // Os quatro métodos seguintes chamam o Mercado.
-    // As regras econômicas ficam na classe Mercado,
-    // e não na classe Menu.
-
+    // Delegamos as negociações à classe Mercado.
     private void comprarGraos() {
-        int quantidade = lerQuantidade();
+        int qtd = lerQuantidade();
 
-        if (mercado.comprarGraos(cidade, quantidade)) {
-            System.out.println("Graos comprados com sucesso!");
+        if (mercado.comprarGraos(cidade, qtd)) {
+            System.out.println("Compra realizada!");
         } else {
             System.out.println("Compra nao realizada.");
         }
     }
 
     private void venderGraos() {
-        int quantidade = lerQuantidade();
+        int qtd = lerQuantidade();
 
-        if (mercado.venderGraos(cidade, quantidade)) {
-            System.out.println("Graos vendidos com sucesso!");
+        if (mercado.venderGraos(cidade, qtd)) {
+            System.out.println("Venda realizada!");
         } else {
             System.out.println("Venda nao realizada.");
         }
     }
 
     private void comprarTerras() {
-        int quantidade = lerQuantidade();
+        int qtd = lerQuantidade();
 
-        if (mercado.comprarTerras(cidade, quantidade)) {
-            System.out.println("Terras compradas com sucesso!");
+        if (mercado.comprarTerras(cidade, qtd)) {
+            System.out.println("Compra realizada!");
         } else {
             System.out.println("Compra nao realizada.");
         }
     }
 
     private void venderTerras() {
-        int quantidade = lerQuantidade();
+        int qtd = lerQuantidade();
 
-        if (mercado.venderTerras(cidade, quantidade)) {
-            System.out.println("Terras vendidas com sucesso!");
+        if (mercado.venderTerras(cidade, qtd)) {
+            System.out.println("Venda realizada!");
         } else {
             System.out.println("Venda nao realizada.");
         }
     }
 
-    // Apresenta informações sobre o projeto.
+    // ===== AGRICULTURA - ETAPA 4 =====
+
+    // Abre o submenu e mantém o jogador nele
+    // até escolher a opção 0.
+    private void abrirAgricultura() {
+        if (!verificarPartida()) {
+            return;
+        }
+
+        boolean naAgricultura = true;
+
+        while (naAgricultura) {
+            System.out.println("\n===== AGRICULTURA =====");
+            System.out.println("Terras: " + cidade.getTerras());
+            System.out.println("Servos: " + cidade.getServos());
+            System.out.println("Graos: " + cidade.getGraos());
+
+            System.out.println("\n1 - Processar colheita");
+            System.out.println("2 - Distribuir alimentos");
+            System.out.println("0 - Voltar");
+            System.out.print("Escolha: ");
+
+            int opcao = lerOpcao();
+
+            switch (opcao) {
+                case 1:
+                    colher();
+                    break;
+                case 2:
+                    distribuirAlimentos();
+                    break;
+                case 0:
+                    naAgricultura = false;
+                    break;
+                default:
+                    System.out.println("Opcao invalida!");
+            }
+        }
+    }
+
+    // Chama o método responsável pela colheita.
+    private void colher() {
+        agricultura.processarColheita(cidade);
+    }
+
+    // Solicita o percentual e chama Agricultura.
+    private void distribuirAlimentos() {
+        System.out.print(
+                "Percentual de graos para distribuir (20 a 80): "
+        );
+
+        int percentual = lerOpcao();
+
+        boolean sucesso = agricultura.distribuirAlimentos(
+                cidade, percentual
+        );
+
+        if (!sucesso) {
+            System.out.println(
+                    "Percentual invalido! Use de 20 a 80."
+            );
+        }
+    }
+
     private void exibirSobre() {
         System.out.println("\nBolonha e Milano");
-        System.out.println("Jogo de estrategia economica medieval.");
-        System.out.println("Etapa 3: Economia e Mercado.");
+        System.out.println(
+                "Jogo de estrategia economica medieval."
+        );
+        System.out.println(
+                "Etapa 4: agricultura e populacao."
+        );
     }
 }

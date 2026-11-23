@@ -1,28 +1,20 @@
 
 import java.util.Scanner;
 
-// Esta classe controla o menu principal do jogo.
-// Ela recebe as escolhas do usuário e chama as funcionalidades.
+// Controla a interacao do jogador com o jogo.
 public class Menu {
 
-    // Scanner permite ler o que o jogador digita no terminal.
     private Scanner scanner = new Scanner(System.in);
-
-    // Controla se o jogo continua funcionando.
-    // true = continua; false = encerra.
     private boolean emExecucao = true;
 
-    // Guarda o jogador da partida atual.
-    // Começa como null porque ainda não existe jogador.
+    // Guardam os objetos da partida atual.
     private Jogador jogador;
+    private Cidade cidade;
 
-    // Método responsável por iniciar o menu.
     public void executar() {
-
         System.out.println("Bem-vindo ao Bolonha e Milano!");
 
-        // O while mantém o menu funcionando
-        // enquanto emExecucao for verdadeiro.
+        // Repete o menu ate o jogador escolher sair.
         while (emExecucao) {
 
             System.out.println("\n===== MENU PRINCIPAL =====");
@@ -34,100 +26,99 @@ public class Menu {
             System.out.println("6 - Construcoes");
             System.out.println("7 - Sobre o jogo");
             System.out.println("0 - Sair");
-
             System.out.print("Escolha uma opcao: ");
 
-            // Lemos a entrada como String para evitar
-            // que letras causem erros no programa.
             String entrada = scanner.nextLine();
 
-            // O switch identifica a opção escolhida.
             switch (entrada) {
-
                 case "1":
-                    // Solicita o nome do jogador.
-                    System.out.print("Digite seu nome: ");
-                    String nome = scanner.nextLine().trim();
-
-                    // Se não digitar um nome,
-                    // utilizamos um valor padrão.
-                    if (nome.isEmpty()) {
-                        nome = "Jogador 1";
-                    }
-
-                    // Cria um objeto da classe Jogador.
-                    // O construtor define o nome e o título inicial.
-                    jogador = new Jogador(nome);
-
-                    System.out.println("\nJogo iniciado!");
-                    System.out.println("Jogador: " + jogador.getNome());
-                    System.out.println("Titulo: " + jogador.getTitulo());
+                    novoJogo();
                     break;
 
                 case "2":
-                    // Verifica se existe uma partida.
-                    if (jogador == null) {
-                        System.out.println("Inicie um novo jogo primeiro!");
-                    } else {
-                        System.out.println("\n===== STATUS =====");
-                        System.out.println("Jogador: " + jogador.getNome());
-                        System.out.println("Titulo: " + jogador.getTitulo());
-                        System.out.println("Os recursos da cidade serao adicionados depois.");
+                    if (verificarPartida()) {
+                        mostrarStatus();
                     }
                     break;
 
                 case "3":
-                    if (jogador == null) {
-                        System.out.println("Inicie um novo jogo primeiro!");
-                    } else {
-                        System.out.println("Mercado em desenvolvimento.");
-                    }
-                    break;
-
                 case "4":
-                    if (jogador == null) {
-                        System.out.println("Inicie um novo jogo primeiro!");
-                    } else {
-                        System.out.println("Agricultura em desenvolvimento.");
-                    }
-                    break;
-
                 case "5":
-                    if (jogador == null) {
-                        System.out.println("Inicie um novo jogo primeiro!");
-                    } else {
-                        System.out.println("Governo em desenvolvimento.");
-                    }
-                    break;
-
                 case "6":
-                    if (jogador == null) {
-                        System.out.println("Inicie um novo jogo primeiro!");
-                    } else {
-                        System.out.println("Construcoes em desenvolvimento.");
+                    if (verificarPartida()) {
+                        System.out.println(
+                            "Funcionalidade sera implementada nas proximas etapas."
+                        );
                     }
                     break;
 
                 case "7":
-                    System.out.println("\n===== SOBRE O JOGO =====");
-                    System.out.println("Bolonha e Milano e um jogo de estrategia");
-                    System.out.println("economica e politica ambientado na Italia medieval.");
-                    System.out.println("O jogador governa uma cidade e administra");
-                    System.out.println("recursos para desenvolver seu territorio.");
+                    System.out.println(
+                        "Bolonha e Milano e um jogo de estrategia economica"
+                    );
+                    System.out.println(
+                        "e politica ambientado na Italia medieval."
+                    );
                     break;
 
                 case "0":
-                    // Altera a variável para false,
-                    // encerrando o laço while.
-                    System.out.println("Encerrando o jogo...");
                     emExecucao = false;
+                    System.out.println("Encerrando o jogo...");
                     break;
 
                 default:
-                    // Trata opções que não existem no menu.
-                    System.out.println("Opcao invalida! Tente novamente.");
-                    break;
+                    System.out.println("Opcao invalida!");
             }
         }
+    }
+
+    // Cria o jogador e a cidade com seus valores iniciais.
+    private void novoJogo() {
+        System.out.print("Digite seu nome: ");
+        String nome = scanner.nextLine().trim();
+
+        if (nome.isEmpty()) {
+            nome = "Jogador 1";
+        }
+
+        System.out.print("Digite o nome da cidade: ");
+        String nomeCidade = scanner.nextLine().trim();
+
+        if (nomeCidade.isEmpty()) {
+            nomeCidade = "Bolonha";
+        }
+
+        // Cria os objetos e associa a cidade ao jogador.
+        jogador = new Jogador(nome);
+        cidade = new Cidade(nomeCidade, jogador);
+
+        System.out.println("\nJogo iniciado com sucesso!");
+        mostrarStatus();
+    }
+
+    // Impede acessar funcionalidades antes de iniciar o jogo.
+    private boolean verificarPartida() {
+        if (jogador == null || cidade == null) {
+            System.out.println("Inicie um novo jogo primeiro!");
+            return false;
+        }
+        return true;
+    }
+
+    // Consulta os recursos usando os getters da Cidade.
+    private void mostrarStatus() {
+        System.out.println("\n===== STATUS DA CIDADE =====");
+        System.out.println("Jogador: " + jogador.getNome());
+        System.out.println("Titulo: " + jogador.getTitulo());
+        System.out.println("Cidade: " + cidade.getNome());
+        System.out.println("Ano: " + cidade.getAnoAtual());
+        System.out.println("Florins: " + cidade.getFlorins());
+        System.out.println("Terras: " + cidade.getTerras());
+        System.out.println("Graos: " + cidade.getGraos());
+        System.out.println("Servos: " + cidade.getServos());
+        System.out.println("Imposto: " + cidade.getTaxaImposto() + "%");
+        System.out.println("Justica: " + cidade.getNivelJustica());
+        System.out.println("Soldados: " + cidade.getSoldados());
+        System.out.println("Construcoes: " + cidade.getConstrucoes());
     }
 }

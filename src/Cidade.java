@@ -15,6 +15,10 @@ public class Cidade {
     private int taxaImposto;
     private String nivelJustica;
 
+    // ETAPA 6: novos recursos
+    private int soldados;
+    private int construcoes;
+
     // Construtor da cidade
     public Cidade(String nome, Jogador dono) {
         this.nome = nome;
@@ -28,6 +32,10 @@ public class Cidade {
         // Configuracoes iniciais do governo
         this.taxaImposto = 10;
         this.nivelJustica = "Moderada";
+
+        // Recursos iniciais da Etapa 6
+        this.soldados = 0;
+        this.construcoes = 0;
     }
 
     // GETTERS
@@ -60,7 +68,7 @@ public class Cidade {
         return servos;
     }
 
-    // ETAPA 5: getters e setters do governo
+    // Configuracoes do governo
 
     public int getTaxaImposto() {
         return taxaImposto;
@@ -78,6 +86,16 @@ public class Cidade {
         this.nivelJustica = nivel;
     }
 
+    // ETAPA 6: getters dos novos recursos
+
+    public int getSoldados() {
+        return soldados;
+    }
+
+    public int getConstrucoes() {
+        return construcoes;
+    }
+
     // Avanca o ano da cidade
     public void avancarAno() {
         anoAtual++;
@@ -91,7 +109,7 @@ public class Cidade {
         }
     }
 
-    // Remove florins se houver saldo suficiente
+    // Remove florins com seguranca
     public boolean removerFlorins(int quantidade) {
         if (quantidade <= 0 || quantidade > florins) {
             return false;
@@ -109,7 +127,7 @@ public class Cidade {
         }
     }
 
-    // Remove terras
+    // Remove terras com seguranca
     public boolean removerTerras(int quantidade) {
         if (quantidade <= 0 || quantidade > terras) {
             return false;
@@ -127,7 +145,7 @@ public class Cidade {
         }
     }
 
-    // Remove graos
+    // Remove graos com seguranca
     public boolean removerGraos(int quantidade) {
         if (quantidade <= 0 || quantidade > graos) {
             return false;
@@ -137,7 +155,7 @@ public class Cidade {
         return true;
     }
 
-    // Aumenta a populacao
+    // Adiciona servos
     public void adicionarServos(int quantidade) {
         if (quantidade > 0 &&
             quantidade <= Integer.MAX_VALUE - servos) {
@@ -145,7 +163,7 @@ public class Cidade {
         }
     }
 
-    // Reduz a populacao
+    // Remove servos com seguranca
     public boolean removerServos(int quantidade) {
         if (quantidade <= 0 || quantidade > servos) {
             return false;
@@ -155,8 +173,53 @@ public class Cidade {
         return true;
     }
 
+    // =========================
+    // SOLDADOS - ETAPA 6
+    // =========================
+
+    // Aumenta a quantidade de soldados
+    public void adicionarSoldados(int quantidade) {
+        if (quantidade > 0 &&
+            quantidade <= Integer.MAX_VALUE - soldados) {
+            soldados += quantidade;
+        }
+    }
+
+    // Remove soldados com seguranca
+    public boolean removerSoldados(int quantidade) {
+        if (quantidade <= 0 || quantidade > soldados) {
+            return false;
+        }
+
+        soldados -= quantidade;
+        return true;
+    }
+
+    // =========================
+    // CONSTRUCOES - ETAPA 6
+    // =========================
+
+    // Aumenta a quantidade de construcoes
+    public void adicionarConstrucoes(int quantidade) {
+        if (quantidade > 0 &&
+            quantidade <= Integer.MAX_VALUE - construcoes) {
+            construcoes += quantidade;
+        }
+    }
+
+    // Remove construcoes com seguranca
+    public boolean removerConstrucoes(int quantidade) {
+        if (quantidade <= 0 || quantidade > construcoes) {
+            return false;
+        }
+
+        construcoes -= quantidade;
+        return true;
+    }
+
     // Exibe todas as informacoes da cidade
     public void exibirStatus() {
+
         System.out.println("\n===== STATUS DA CIDADE =====");
         System.out.println("Cidade: " + nome);
         System.out.println("Governante: " + dono.getNome());
@@ -167,9 +230,13 @@ public class Cidade {
         System.out.println("Graos: " + graos);
         System.out.println("Servos: " + servos);
 
-        // Novas informacoes da Etapa 5
+        // Informacoes do governo
         System.out.println("Taxa de imposto: " + taxaImposto + "%");
         System.out.println("Nivel de justica: " + nivelJustica);
+
+        // Novas informacoes da Etapa 6
+        System.out.println("Soldados: " + soldados);
+        System.out.println("Construcoes: " + construcoes);
 
         System.out.println("============================");
     }

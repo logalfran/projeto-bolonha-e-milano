@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Menu {
 
-    // Leitura dos dados digitados pelo jogador
+    // Leitura dos dados digitados
     private Scanner scanner = new Scanner(System.in);
 
     // Controla a execucao do jogo
@@ -15,9 +15,10 @@ public class Menu {
     // Classes responsaveis pelas regras do jogo
     private Mercado mercado = new Mercado();
     private Agricultura agricultura = new Agricultura();
-
-    // ETAPA 5: nova classe de governo
     private Governo governo = new Governo();
+
+    // ETAPA 6: nova classe
+    private Construcoes construcoes = new Construcoes();
 
     // Executa o menu principal
     public void executar() {
@@ -77,15 +78,13 @@ public class Menu {
                 abrirAgricultura();
                 break;
 
-            // ETAPA 5: acesso ao governo
             case 5:
                 abrirGoverno();
                 break;
 
+            // ETAPA 6: acesso as construcoes
             case 6:
-                if (verificarPartida()) {
-                    System.out.println("Disponivel na Etapa 6.");
-                }
+                abrirConstrucoes();
                 break;
 
             case 7:
@@ -206,7 +205,7 @@ public class Menu {
         }
     }
 
-    // Le uma quantidade informada pelo jogador
+    // Le uma quantidade digitada
     private int lerQuantidade() {
         System.out.print("Quantidade: ");
         return lerOpcao();
@@ -300,12 +299,12 @@ public class Menu {
         }
     }
 
-    // Processa a colheita da cidade
+    // Processa a colheita
     private void colher() {
         agricultura.processarColheita(cidade);
     }
 
-    // Distribui uma porcentagem dos graos
+    // Distribui alimentos para a populacao
     private void distribuirAlimentos() {
 
         System.out.print("Percentual de alimentos (20 a 80): ");
@@ -320,7 +319,6 @@ public class Menu {
     // GOVERNO - ETAPA 5
     // =========================
 
-    // Abre o submenu de governo
     private void abrirGoverno() {
 
         if (!verificarPartida()) {
@@ -331,7 +329,6 @@ public class Menu {
 
         while (noGoverno) {
 
-            // Exibe as configuracoes atuais
             System.out.println("\n===== GOVERNO =====");
             System.out.println("Florins: " + cidade.getFlorins());
 
@@ -371,7 +368,7 @@ public class Menu {
         }
     }
 
-    // Solicita a arrecadacao dos impostos
+    // Arrecada impostos
     private void arrecadarImpostos() {
 
         int arrecadado = governo.arrecadarImpostos(cidade);
@@ -383,7 +380,7 @@ public class Menu {
                 + cidade.getFlorins());
     }
 
-    // Permite alterar a taxa de imposto
+    // Altera a taxa de imposto
     private void definirTaxaImposto() {
 
         System.out.print("Nova taxa de imposto (0 a 50): ");
@@ -396,7 +393,7 @@ public class Menu {
         }
     }
 
-    // Permite alterar o nivel de justica
+    // Altera o nivel de justica
     private void definirJustica() {
 
         System.out.println("\n===== NIVEL DE JUSTICA =====");
@@ -433,6 +430,103 @@ public class Menu {
         }
     }
 
+    // =========================
+    // CONSTRUCOES - ETAPA 6
+    // =========================
+
+    // Abre o submenu de construcoes e soldados
+    private void abrirConstrucoes() {
+
+        if (!verificarPartida()) {
+            return;
+        }
+
+        boolean nasConstrucoes = true;
+
+        while (nasConstrucoes) {
+
+            // Exibe os recursos atuais
+            System.out.println("\n===== CONSTRUCOES E SOLDADOS =====");
+            System.out.println("Florins: " + cidade.getFlorins());
+            System.out.println("Servos: " + cidade.getServos());
+            System.out.println("Soldados: " + cidade.getSoldados());
+            System.out.println("Construcoes: " + cidade.getConstrucoes());
+
+            // Exibe os precos
+            System.out.println("Preco por soldado: "
+                    + construcoes.getPrecoSoldado()
+                    + " florins + 1 servo");
+
+            System.out.println("Preco por construcao: "
+                    + construcoes.getPrecoConstrucao()
+                    + " florins");
+
+            // Opcoes do submenu
+            System.out.println("1 - Recrutar soldados");
+            System.out.println("2 - Construir");
+            System.out.println("0 - Voltar");
+            System.out.print("Escolha: ");
+
+            switch (lerOpcao()) {
+
+                case 1:
+                    recrutarSoldados();
+                    break;
+
+                case 2:
+                    construir();
+                    break;
+
+                case 0:
+                    nasConstrucoes = false;
+                    break;
+
+                default:
+                    System.out.println("Opcao invalida.");
+            }
+        }
+    }
+
+    // Solicita a quantidade de soldados
+    private void recrutarSoldados() {
+
+        System.out.print("Quantidade de soldados: ");
+        int quantidade = lerOpcao();
+
+        // Delega a operacao para a classe Construcoes
+        if (construcoes.recrutarSoldados(cidade, quantidade)) {
+
+            System.out.println("Recrutamento realizado!");
+            System.out.println("Soldados recrutados: " + quantidade);
+            System.out.println("Florins restantes: " + cidade.getFlorins());
+            System.out.println("Servos restantes: " + cidade.getServos());
+
+        } else {
+
+            System.out.println("Recrutamento invalido.");
+            System.out.println("Verifique a quantidade, florins e servos.");
+        }
+    }
+
+    // Solicita a quantidade de construcoes
+    private void construir() {
+
+        System.out.print("Quantidade de construcoes: ");
+        int quantidade = lerOpcao();
+
+        // Delega a operacao para a classe Construcoes
+        if (construcoes.construir(cidade, quantidade)) {
+
+            System.out.println("Construcoes realizadas!");
+            System.out.println("Novas construcoes: " + quantidade);
+            System.out.println("Florins restantes: " + cidade.getFlorins());
+
+        } else {
+
+            System.out.println("Construcao invalida ou saldo insuficiente.");
+        }
+    }
+
     // Informacoes sobre o jogo
     private void exibirSobre() {
 
@@ -440,6 +534,7 @@ public class Menu {
         System.out.println("Bolonha e Milano");
         System.out.println("Jogo de administracao de cidades medievais.");
         System.out.println("Gerencie recursos, populacao e governo.");
+        System.out.println("Administre soldados e construcoes.");
         System.out.println("Projeto de Programacao Orientada a Objetos.");
     }
 }

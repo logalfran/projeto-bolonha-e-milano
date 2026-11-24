@@ -1,5 +1,5 @@
 @startuml
-title Bolonha e Milano - Casos de Uso - Etapa 5
+title Bolonha e Milano - Casos de Uso - Etapa 6
 
 left to right direction
 
@@ -30,6 +30,11 @@ rectangle "Sistema Bolonha e Milano" {
     usecase "Definir taxa de imposto" as UC13
     usecase "Definir nivel de justica" as UC14
 
+    ' Construcoes - Etapa 6
+    usecase "Acessar construcoes e soldados" as UC17
+    usecase "Recrutar soldados" as UC18
+    usecase "Construir" as UC19
+
     ' Outras funcionalidades
     usecase "Consultar informacoes do jogo" as UC15
     usecase "Sair do jogo" as UC16
@@ -41,6 +46,7 @@ J --> UC2
 J --> UC3
 J --> UC8
 J --> UC11
+J --> UC17
 J --> UC15
 J --> UC16
 
@@ -58,5 +64,9 @@ UC10 ..> UC8 : <<extend>>
 UC12 ..> UC11 : <<extend>>
 UC13 ..> UC11 : <<extend>>
 UC14 ..> UC11 : <<extend>>
+
+' Operacoes de construcoes e soldados
+UC18 ..> UC17 : <<extend>>
+UC19 ..> UC17 : <<extend>>
 
 @enduml

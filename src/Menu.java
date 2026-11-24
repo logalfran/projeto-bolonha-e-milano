@@ -1,49 +1,74 @@
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Menu {
 
-    // Leitura dos dados digitados
     private Scanner scanner = new Scanner(System.in);
 
-    // Controla a execucao do jogo
     private boolean emExecucao = true;
 
-    // Objetos principais
-    private Jogador jogador;
+    // ETAPA 7: controla a partida
+    private Partida partida;
+
+    // Cidade do jogador atual
     private Cidade cidade;
 
-    // Classes responsaveis pelas regras do jogo
+    // Classes de servico
     private Mercado mercado = new Mercado();
     private Agricultura agricultura = new Agricultura();
     private Governo governo = new Governo();
-
-    // ETAPA 6: nova classe
     private Construcoes construcoes = new Construcoes();
+    private Nobreza nobreza = new Nobreza();
 
     // Executa o menu principal
     public void executar() {
 
         while (emExecucao) {
+
             exibirOpcoes();
+
             int opcao = lerOpcao();
+
             processarOpcao(opcao);
         }
 
         scanner.close();
     }
 
-    // Exibe as opcoes do menu principal
+    // Exibe o menu principal
     private void exibirOpcoes() {
 
         System.out.println("\n===== BOLONHA E MILANO =====");
+
+        // Exibe quem esta jogando
+        if (partida != null && cidade != null) {
+
+            System.out.println("Ano: " + partida.getAnoAtual());
+
+            System.out.println("Jogador atual: "
+                    + cidade.getDono().getNome());
+
+            System.out.println("Cidade atual: "
+                    + cidade.getNome());
+
+            System.out.println("Titulo: "
+                    + cidade.getDono().getTitulo());
+
+            System.out.println("----------------------------");
+        }
+
         System.out.println("1 - Iniciar novo jogo");
         System.out.println("2 - Ver status da cidade");
         System.out.println("3 - Acessar mercado");
         System.out.println("4 - Acessar agricultura");
         System.out.println("5 - Acessar governo");
         System.out.println("6 - Construcoes e soldados");
-        System.out.println("7 - Sobre o jogo");
+        System.out.println("7 - Encerrar turno");
+        System.out.println("8 - Ver classificacao");
+        System.out.println("9 - Sobre o jogo");
         System.out.println("0 - Sair");
+
         System.out.print("Escolha: ");
     }
 
@@ -51,8 +76,11 @@ public class Menu {
     private int lerOpcao() {
 
         try {
+
             return Integer.parseInt(scanner.nextLine().trim());
+
         } catch (NumberFormatException e) {
+
             return -1;
         }
     }
@@ -82,12 +110,19 @@ public class Menu {
                 abrirGoverno();
                 break;
 
-            // ETAPA 6: acesso as construcoes
             case 6:
                 abrirConstrucoes();
                 break;
 
             case 7:
+                encerrarTurno();
+                break;
+
+            case 8:
+                exibirClassificacao();
+                break;
+
+            case 9:
                 exibirSobre();
                 break;
 
@@ -101,41 +136,81 @@ public class Menu {
         }
     }
 
-    // Verifica se existe um jogo iniciado
+    // Verifica se existe uma partida em andamento
     private boolean verificarPartida() {
 
-        if (cidade == null) {
+        if (partida == null || cidade == null) {
+
             System.out.println("Nenhum jogo em andamento.");
+
             return false;
         }
 
         return true;
     }
 
-    // Cria um jogador e sua cidade
+    // =========================
+    // NOVA PARTIDA - ETAPA 7
+    // =========================
+
     private void iniciarNovoJogo() {
 
-        System.out.print("Nome do jogador: ");
-        String nomeJogador = scanner.nextLine().trim();
+        System.out.print("Quantidade de jogadores (1 a 4): ");
 
-        if (nomeJogador.isEmpty()) {
-            nomeJogador = "Jogador 1";
+        int quantidade = lerOpcao();
+
+        // Utiliza dois jogadores caso o valor seja invalido
+        if (quantidade < 1 ||
+            quantidade > Partida.MAXIMO_JOGADORES) {
+
+            quantidade = 2;
+
+            System.out.println(
+                    "Quantidade invalida. Serao dois jogadores.");
         }
 
-        System.out.print("Nome da cidade: ");
-        String nomeCidade = scanner.nextLine().trim();
+        // Cidades disponiveis
+        String[] nomesCidades = {
+            "Bolonha",
+            "Milano",
+            "Florença",
+            "Veneza"
+        };
 
-        if (nomeCidade.isEmpty()) {
-            nomeCidade = "Bolonha";
+        // Cria uma nova partida
+        partida = new Partida();
+
+        // Cria os jogadores e suas respectivas cidades
+        for (int i = 0; i < quantidade; i++) {
+
+            System.out.print("Nome do jogador " + (i + 1) + ": ");
+
+            String nome = scanner.nextLine().trim();
+
+            if (nome.isEmpty()) {
+                nome = "Jogador " + (i + 1);
+            }
+
+            Jogador jogador = new Jogador(nome);
+
+            Cidade novaCidade =
+                    new Cidade(nomesCidades[i], jogador);
+
+            partida.adicionarCidade(novaCidade);
+
+            System.out.println(nome + " governa "
+                    + novaCidade.getNome());
         }
 
-        jogador = new Jogador(nomeJogador);
-        cidade = new Cidade(nomeCidade, jogador);
+        // Define a primeira cidade a jogar
+        cidade = partida.getCidadeAtual();
 
-        System.out.println("Novo jogo iniciado!");
+        System.out.println("\nNova partida iniciada!");
+        System.out.println("Ano inicial: " + partida.getAnoAtual());
+        System.out.println("Ano final: " + partida.getAnoFinal());
     }
 
-    // Exibe o status da cidade
+    // Exibe o status da cidade atual
     private void exibirStatus() {
 
         if (!verificarPartida()) {
@@ -143,6 +218,9 @@ public class Menu {
         }
 
         cidade.exibirStatus();
+
+        System.out.println("Prestigio: "
+                + nobreza.calcularPrestigio(cidade));
     }
 
     // =========================
@@ -205,9 +283,10 @@ public class Menu {
         }
     }
 
-    // Le uma quantidade digitada
     private int lerQuantidade() {
+
         System.out.print("Quantidade: ");
+
         return lerOpcao();
     }
 
@@ -274,6 +353,9 @@ public class Menu {
             System.out.println("Servos: " + cidade.getServos());
             System.out.println("Graos: " + cidade.getGraos());
 
+            System.out.println("Colheita realizada: "
+                    + (cidade.isColheitaFeita() ? "Sim" : "Nao"));
+
             System.out.println("1 - Processar colheita");
             System.out.println("2 - Distribuir alimentos");
             System.out.println("0 - Voltar");
@@ -299,15 +381,25 @@ public class Menu {
         }
     }
 
-    // Processa a colheita
+    // ETAPA 7: verifica o resultado da colheita
     private void colher() {
-        agricultura.processarColheita(cidade);
+
+        int resultado = agricultura.processarColheita(cidade);
+
+        if (resultado == -1) {
+
+            System.out.println("A colheita deste ano ja foi realizada.");
+
+        } else if (resultado == -2) {
+
+            System.out.println("Limite de armazenamento excedido.");
+        }
     }
 
-    // Distribui alimentos para a populacao
     private void distribuirAlimentos() {
 
         System.out.print("Percentual de alimentos (20 a 80): ");
+
         int percentual = lerOpcao();
 
         if (!agricultura.distribuirAlimentos(cidade, percentual)) {
@@ -337,6 +429,9 @@ public class Menu {
 
             System.out.println("Nivel de justica: "
                     + cidade.getNivelJustica());
+
+            System.out.println("Impostos arrecadados: "
+                    + (cidade.isImpostosArrecadados() ? "Sim" : "Nao"));
 
             System.out.println("1 - Arrecadar impostos");
             System.out.println("2 - Definir taxa de imposto");
@@ -368,22 +463,33 @@ public class Menu {
         }
     }
 
-    // Arrecada impostos
+    // ETAPA 7: verifica o resultado da arrecadacao
     private void arrecadarImpostos() {
 
         int arrecadado = governo.arrecadarImpostos(cidade);
 
-        System.out.println("Impostos arrecadados: "
-                + arrecadado + " florins");
+        if (arrecadado == -1) {
 
-        System.out.println("Saldo atual: "
-                + cidade.getFlorins());
+            System.out.println("Os impostos deste ano ja foram arrecadados.");
+
+        } else if (arrecadado == -2) {
+
+            System.out.println("Limite de armazenamento excedido.");
+
+        } else {
+
+            System.out.println("Impostos arrecadados: "
+                    + arrecadado + " florins");
+
+            System.out.println("Saldo atual: "
+                    + cidade.getFlorins());
+        }
     }
 
-    // Altera a taxa de imposto
     private void definirTaxaImposto() {
 
         System.out.print("Nova taxa de imposto (0 a 50): ");
+
         int taxa = lerOpcao();
 
         if (governo.definirTaxaImposto(cidade, taxa)) {
@@ -393,7 +499,6 @@ public class Menu {
         }
     }
 
-    // Altera o nivel de justica
     private void definirJustica() {
 
         System.out.println("\n===== NIVEL DE JUSTICA =====");
@@ -434,7 +539,6 @@ public class Menu {
     // CONSTRUCOES - ETAPA 6
     // =========================
 
-    // Abre o submenu de construcoes e soldados
     private void abrirConstrucoes() {
 
         if (!verificarPartida()) {
@@ -445,14 +549,12 @@ public class Menu {
 
         while (nasConstrucoes) {
 
-            // Exibe os recursos atuais
             System.out.println("\n===== CONSTRUCOES E SOLDADOS =====");
             System.out.println("Florins: " + cidade.getFlorins());
             System.out.println("Servos: " + cidade.getServos());
             System.out.println("Soldados: " + cidade.getSoldados());
             System.out.println("Construcoes: " + cidade.getConstrucoes());
 
-            // Exibe os precos
             System.out.println("Preco por soldado: "
                     + construcoes.getPrecoSoldado()
                     + " florins + 1 servo");
@@ -461,7 +563,6 @@ public class Menu {
                     + construcoes.getPrecoConstrucao()
                     + " florins");
 
-            // Opcoes do submenu
             System.out.println("1 - Recrutar soldados");
             System.out.println("2 - Construir");
             System.out.println("0 - Voltar");
@@ -487,13 +588,12 @@ public class Menu {
         }
     }
 
-    // Solicita a quantidade de soldados
     private void recrutarSoldados() {
 
         System.out.print("Quantidade de soldados: ");
+
         int quantidade = lerOpcao();
 
-        // Delega a operacao para a classe Construcoes
         if (construcoes.recrutarSoldados(cidade, quantidade)) {
 
             System.out.println("Recrutamento realizado!");
@@ -508,13 +608,12 @@ public class Menu {
         }
     }
 
-    // Solicita a quantidade de construcoes
     private void construir() {
 
         System.out.print("Quantidade de construcoes: ");
+
         int quantidade = lerOpcao();
 
-        // Delega a operacao para a classe Construcoes
         if (construcoes.construir(cidade, quantidade)) {
 
             System.out.println("Construcoes realizadas!");
@@ -527,14 +626,178 @@ public class Menu {
         }
     }
 
+    // =========================
+    // TURNOS - ETAPA 7
+    // =========================
+
+    private void encerrarTurno() {
+
+        if (!verificarPartida()) {
+            return;
+        }
+
+        System.out.println("\nTurno encerrado: "
+                + cidade.getDono().getNome());
+
+        // Verifica se todos os jogadores terminaram
+        boolean anoTerminou = partida.passarTurno();
+
+        if (anoTerminou) {
+
+            System.out.println("\n===== FIM DO ANO =====");
+            System.out.println("Ano encerrado: "
+                    + partida.getAnoAtual());
+
+            // Avanca o ano e verifica as promocoes
+            List<Cidade> promovidas =
+                    partida.encerrarAno(nobreza);
+
+            // Exibe os governantes promovidos
+            for (Cidade promovida : promovidas) {
+
+                System.out.println(
+                        promovida.getDono().getNome()
+                        + " foi promovido para "
+                        + promovida.getDono().getTitulo()
+                        + "!");
+            }
+
+            // Exibe a classificacao atualizada
+            exibirClassificacao();
+
+            // Verifica se existe um vencedor
+            if (partida.terminou()) {
+
+                encerrarPartida();
+
+                return;
+            }
+
+            System.out.println("\nNovo ano: "
+                    + partida.getAnoAtual());
+        }
+
+        // Atualiza a cidade do jogador atual
+        cidade = partida.getCidadeAtual();
+
+        System.out.println("\nProximo jogador: "
+                + cidade.getDono().getNome());
+
+        System.out.println("Cidade: " + cidade.getNome());
+    }
+
+    // =========================
+    // CLASSIFICACAO - ETAPA 7
+    // =========================
+
+    private void exibirClassificacao() {
+
+        if (!verificarPartida()) {
+            return;
+        }
+
+        System.out.println("\n===== CLASSIFICACAO =====");
+
+        // Cria uma copia para ordenar sem alterar os turnos
+        List<Cidade> classificacao =
+                new ArrayList<>(partida.getCidades());
+
+        // Ordena pelo titulo e depois pelo prestigio
+        classificacao.sort((a, b) -> {
+
+            int comparacao = Integer.compare(
+                    b.getDono().getNivelTitulo(),
+                    a.getDono().getNivelTitulo());
+
+            if (comparacao != 0) {
+                return comparacao;
+            }
+
+            return Integer.compare(
+                    nobreza.calcularPrestigio(b),
+                    nobreza.calcularPrestigio(a));
+        });
+
+        int posicao = 1;
+
+        // Exibe os participantes
+        for (Cidade participante : classificacao) {
+
+            Jogador governante = participante.getDono();
+
+            int prestigio =
+                    nobreza.calcularPrestigio(participante);
+
+            int necessario =
+                    nobreza.prestigioParaProximoTitulo(governante);
+
+            System.out.println("\nPosicao: " + posicao);
+            System.out.println("Cidade: " + participante.getNome());
+            System.out.println("Governante: " + governante.getNome());
+            System.out.println("Titulo: " + governante.getTitulo());
+            System.out.println("Prestigio: " + prestigio);
+
+            if (necessario == -1) {
+
+                System.out.println("Titulo maximo atingido!");
+
+            } else {
+
+                int faltam = Math.max(0, necessario - prestigio);
+
+                System.out.println("Pontos para o proximo titulo: "
+                        + faltam);
+            }
+
+            posicao++;
+        }
+
+        System.out.println("=========================");
+    }
+
+    // =========================
+    // FIM DA PARTIDA - ETAPA 7
+    // =========================
+
+    private void encerrarPartida() {
+
+        Cidade vencedora =
+                partida.determinarVencedor(nobreza);
+
+        System.out.println("\n===== FIM DA PARTIDA =====");
+
+        if (vencedora != null) {
+
+            System.out.println("Vencedor: "
+                    + vencedora.getDono().getNome());
+
+            System.out.println("Cidade vencedora: "
+                    + vencedora.getNome());
+
+            System.out.println("Titulo final: "
+                    + vencedora.getDono().getTitulo());
+
+            System.out.println("Prestigio final: "
+                    + nobreza.calcularPrestigio(vencedora));
+        }
+
+        System.out.println("==========================");
+
+        // Limpa a partida e retorna ao menu principal
+        partida = null;
+        cidade = null;
+    }
+
     // Informacoes sobre o jogo
     private void exibirSobre() {
 
         System.out.println("\n===== SOBRE O JOGO =====");
         System.out.println("Bolonha e Milano");
         System.out.println("Jogo de administracao de cidades medievais.");
-        System.out.println("Gerencie recursos, populacao e governo.");
-        System.out.println("Administre soldados e construcoes.");
+        System.out.println("Partidas de 1 a 4 jogadores.");
+        System.out.println("Gerencie recursos e aumente seu prestigio.");
+        System.out.println("Evolua seu titulo ate Rei/Rainha.");
+        System.out.println("Periodo da partida: 1400 a 1410.");
         System.out.println("Projeto de Programacao Orientada a Objetos.");
     }
 }

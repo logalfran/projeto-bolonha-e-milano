@@ -1,30 +1,53 @@
-
 public class Jogador {
 
-    // Atributos privados: protegem os dados do jogador.
     private String nome;
-    private String titulo;
 
-    // Construtor: executado quando criamos um jogador.
+    // Nivel atual do titulo de nobreza
+    private int nivelTitulo;
+
+    // Titulos em ordem de evolucao
+    private static final String[] TITULOS = {
+        "Cavaleiro",
+        "Barão",
+        "Conde",
+        "Marquês",
+        "Duque",
+        "Rei/Rainha"
+    };
+
+    // Construtor
     public Jogador(String nome) {
         this.nome = nome;
-
-        // Todo jogador começa como Cavaleiro.
-        this.titulo = "Cavaleiro";
+        this.nivelTitulo = 0;
     }
 
-    // Getter: permite consultar o nome.
     public String getNome() {
         return nome;
     }
 
-    // Getter: permite consultar o título.
+    // Retorna o titulo correspondente ao nivel
     public String getTitulo() {
-        return titulo;
+        return TITULOS[nivelTitulo];
     }
 
-    // Permite atualizar o título durante o jogo.
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public int getNivelTitulo() {
+        return nivelTitulo;
+    }
+
+    // Promove o jogador em um nivel
+    public boolean promover() {
+
+        // Impede ultrapassar o ultimo titulo
+        if (ehMonarca()) {
+            return false;
+        }
+
+        nivelTitulo++;
+        return true;
+    }
+
+    // Verifica se o jogador chegou ao titulo maximo
+    public boolean ehMonarca() {
+        return nivelTitulo == TITULOS.length - 1;
     }
 }

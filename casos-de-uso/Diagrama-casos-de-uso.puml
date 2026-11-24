@@ -1,9 +1,8 @@
 @startuml
-title Bolonha e Milano - Casos de Uso - Etapa 6
+title Bolonha e Milano - Casos de Uso - Etapa 7
 
 left to right direction
 
-' Ator principal
 actor "Jogador" as J
 
 rectangle "Sistema Bolonha e Milano" {
@@ -35,6 +34,13 @@ rectangle "Sistema Bolonha e Milano" {
     usecase "Recrutar soldados" as UC18
     usecase "Construir" as UC19
 
+    ' Rodadas e vitoria - Etapa 7
+    usecase "Encerrar turno" as UC20
+    usecase "Fechar ano" as UC21
+    usecase "Verificar promocoes" as UC22
+    usecase "Consultar classificacao" as UC23
+    usecase "Declarar vencedor" as UC24
+
     ' Outras funcionalidades
     usecase "Consultar informacoes do jogo" as UC15
     usecase "Sair do jogo" as UC16
@@ -47,6 +53,8 @@ J --> UC3
 J --> UC8
 J --> UC11
 J --> UC17
+J --> UC20
+J --> UC23
 J --> UC15
 J --> UC16
 
@@ -68,5 +76,11 @@ UC14 ..> UC11 : <<extend>>
 ' Operacoes de construcoes e soldados
 UC18 ..> UC17 : <<extend>>
 UC19 ..> UC17 : <<extend>>
+
+' Operacoes da Etapa 7
+UC21 ..> UC20 : <<extend>>
+UC21 ..> UC22 : <<include>>
+UC21 ..> UC23 : <<include>>
+UC24 ..> UC21 : <<extend>>
 
 @enduml

@@ -5,37 +5,45 @@ public class Cidade {
     private int anoAtual;
     private Jogador dono;
 
-    // Recursos da cidade
+    // Recursos
     private int florins;
     private int terras;
     private int graos;
     private int servos;
 
-    // ETAPA 5: configuracoes do governo
+    // Configuracoes do governo
     private int taxaImposto;
     private String nivelJustica;
 
-    // ETAPA 6: novos recursos
+    // Soldados e construcoes
     private int soldados;
     private int construcoes;
 
-    // Construtor da cidade
+    // ETAPA 7: controle das operacoes anuais
+    private boolean colheitaFeita;
+    private boolean impostosArrecadados;
+
+    // Construtor
     public Cidade(String nome, Jogador dono) {
+
         this.nome = nome;
         this.dono = dono;
         this.anoAtual = 1400;
+
         this.florins = 1000;
         this.terras = 10000;
         this.graos = 500;
         this.servos = 200;
 
-        // Configuracoes iniciais do governo
         this.taxaImposto = 10;
         this.nivelJustica = "Moderada";
 
-        // Recursos iniciais da Etapa 6
         this.soldados = 0;
         this.construcoes = 0;
+
+        // Nenhuma operacao anual foi realizada
+        this.colheitaFeita = false;
+        this.impostosArrecadados = false;
     }
 
     // GETTERS
@@ -68,6 +76,14 @@ public class Cidade {
         return servos;
     }
 
+    public int getSoldados() {
+        return soldados;
+    }
+
+    public int getConstrucoes() {
+        return construcoes;
+    }
+
     // Configuracoes do governo
 
     public int getTaxaImposto() {
@@ -86,22 +102,43 @@ public class Cidade {
         this.nivelJustica = nivel;
     }
 
-    // ETAPA 6: getters dos novos recursos
+    // =========================
+    // CONTROLE ANUAL - ETAPA 7
+    // =========================
 
-    public int getSoldados() {
-        return soldados;
+    // Verifica se a colheita ja foi realizada
+    public boolean isColheitaFeita() {
+        return colheitaFeita;
     }
 
-    public int getConstrucoes() {
-        return construcoes;
+    // Registra a realizacao da colheita
+    public void marcarColheitaFeita() {
+        colheitaFeita = true;
     }
 
-    // Avanca o ano da cidade
+    // Verifica se os impostos ja foram arrecadados
+    public boolean isImpostosArrecadados() {
+        return impostosArrecadados;
+    }
+
+    // Registra a arrecadacao dos impostos
+    public void marcarImpostosArrecadados() {
+        impostosArrecadados = true;
+    }
+
+    // Avanca o ano e libera as operacoes anuais
     public void avancarAno() {
+
         anoAtual++;
+
+        colheitaFeita = false;
+        impostosArrecadados = false;
     }
 
-    // Adiciona florins
+    // =========================
+    // FLORINS
+    // =========================
+
     public void adicionarFlorins(int quantidade) {
         if (quantidade > 0 &&
             quantidade <= Integer.MAX_VALUE - florins) {
@@ -109,7 +146,6 @@ public class Cidade {
         }
     }
 
-    // Remove florins com seguranca
     public boolean removerFlorins(int quantidade) {
         if (quantidade <= 0 || quantidade > florins) {
             return false;
@@ -119,7 +155,10 @@ public class Cidade {
         return true;
     }
 
-    // Adiciona terras
+    // =========================
+    // TERRAS
+    // =========================
+
     public void adicionarTerras(int quantidade) {
         if (quantidade > 0 &&
             quantidade <= Integer.MAX_VALUE - terras) {
@@ -127,7 +166,6 @@ public class Cidade {
         }
     }
 
-    // Remove terras com seguranca
     public boolean removerTerras(int quantidade) {
         if (quantidade <= 0 || quantidade > terras) {
             return false;
@@ -137,7 +175,10 @@ public class Cidade {
         return true;
     }
 
-    // Adiciona graos
+    // =========================
+    // GRAOS
+    // =========================
+
     public void adicionarGraos(int quantidade) {
         if (quantidade > 0 &&
             quantidade <= Integer.MAX_VALUE - graos) {
@@ -145,7 +186,6 @@ public class Cidade {
         }
     }
 
-    // Remove graos com seguranca
     public boolean removerGraos(int quantidade) {
         if (quantidade <= 0 || quantidade > graos) {
             return false;
@@ -155,7 +195,10 @@ public class Cidade {
         return true;
     }
 
-    // Adiciona servos
+    // =========================
+    // SERVOS
+    // =========================
+
     public void adicionarServos(int quantidade) {
         if (quantidade > 0 &&
             quantidade <= Integer.MAX_VALUE - servos) {
@@ -163,7 +206,6 @@ public class Cidade {
         }
     }
 
-    // Remove servos com seguranca
     public boolean removerServos(int quantidade) {
         if (quantidade <= 0 || quantidade > servos) {
             return false;
@@ -174,10 +216,9 @@ public class Cidade {
     }
 
     // =========================
-    // SOLDADOS - ETAPA 6
+    // SOLDADOS
     // =========================
 
-    // Aumenta a quantidade de soldados
     public void adicionarSoldados(int quantidade) {
         if (quantidade > 0 &&
             quantidade <= Integer.MAX_VALUE - soldados) {
@@ -185,7 +226,6 @@ public class Cidade {
         }
     }
 
-    // Remove soldados com seguranca
     public boolean removerSoldados(int quantidade) {
         if (quantidade <= 0 || quantidade > soldados) {
             return false;
@@ -196,10 +236,9 @@ public class Cidade {
     }
 
     // =========================
-    // CONSTRUCOES - ETAPA 6
+    // CONSTRUCOES
     // =========================
 
-    // Aumenta a quantidade de construcoes
     public void adicionarConstrucoes(int quantidade) {
         if (quantidade > 0 &&
             quantidade <= Integer.MAX_VALUE - construcoes) {
@@ -207,7 +246,6 @@ public class Cidade {
         }
     }
 
-    // Remove construcoes com seguranca
     public boolean removerConstrucoes(int quantidade) {
         if (quantidade <= 0 || quantidade > construcoes) {
             return false;
@@ -217,7 +255,7 @@ public class Cidade {
         return true;
     }
 
-    // Exibe todas as informacoes da cidade
+    // Exibe as informacoes da cidade
     public void exibirStatus() {
 
         System.out.println("\n===== STATUS DA CIDADE =====");
@@ -229,14 +267,17 @@ public class Cidade {
         System.out.println("Terras: " + terras + " hectares");
         System.out.println("Graos: " + graos);
         System.out.println("Servos: " + servos);
-
-        // Informacoes do governo
         System.out.println("Taxa de imposto: " + taxaImposto + "%");
         System.out.println("Nivel de justica: " + nivelJustica);
-
-        // Novas informacoes da Etapa 6
         System.out.println("Soldados: " + soldados);
         System.out.println("Construcoes: " + construcoes);
+
+        // ETAPA 7: situacao das operacoes anuais
+        System.out.println("Colheita realizada: "
+                + (colheitaFeita ? "Sim" : "Nao"));
+
+        System.out.println("Impostos arrecadados: "
+                + (impostosArrecadados ? "Sim" : "Nao"));
 
         System.out.println("============================");
     }

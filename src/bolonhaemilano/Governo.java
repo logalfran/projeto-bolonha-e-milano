@@ -1,3 +1,5 @@
+package bolonhaemilano;
+
 public class Governo {
 
     private static final int TAXA_MAXIMA = 50;

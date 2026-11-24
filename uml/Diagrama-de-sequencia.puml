@@ -1,0 +1,93 @@
+
+@startuml
+title Bolonha e Milano - Diagrama de Sequencia - Encerramento do Ano
+
+actor Jogador as J
+participant Menu as M
+participant Partida as P
+participant Cidade as C
+participant Nobreza as N
+participant "Jogador (governante)" as G
+
+J -> M : Seleciona opcao 7
+activate M
+
+M -> M : encerrarTurno()
+
+M -> P : passarTurno()
+activate P
+P --> M : true (ultimo jogador)
+deactivate P
+
+M -> P : encerrarAno(nobreza)
+activate P
+
+loop Para cada cidade participante
+
+    P -> C : avancarAno()
+    activate C
+
+    C -> C : Incrementar ano
+    C -> C : Liberar colheita e impostos
+
+    C --> P : Ano atualizado
+    deactivate C
+
+    P -> N : verificarPromocao(cidade)
+    activate N
+
+    N -> N : calcularPrestigio(cidade)
+
+    N -> C : getDono()
+    C --> N : governante
+
+    N -> G : getNivelTitulo()
+    G --> N : nivel atual
+
+    alt Prestigio suficiente para promocao
+
+        N -> G : promover()
+        G --> N : true
+
+        N --> P : true
+
+    else Prestigio insuficiente ou titulo maximo
+
+        N --> P : false
+
+    end
+
+    deactivate N
+
+end
+
+P --> M : Lista de cidades promovidas
+deactivate P
+
+M -> M : Exibir promocoes
+M -> M : exibirClassificacao()
+
+M -> P : terminou()
+P --> M : Resultado
+
+alt Partida encerrada
+
+    M -> P : determinarVencedor(nobreza)
+    P --> M : Cidade vencedora
+
+    M --> J : Exibir vencedor e titulo
+
+    M -> M : Limpar partida
+
+else Partida continua
+
+    M -> P : getCidadeAtual()
+    P --> M : Primeira cidade
+
+    M --> J : Novo ano e proximo jogador
+
+end
+
+deactivate M
+
+@enduml

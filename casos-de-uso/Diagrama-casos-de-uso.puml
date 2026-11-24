@@ -1,5 +1,5 @@
 @startuml
-title Bolonha e Milano - Casos de Uso - Etapa 7
+title Bolonha e Milano - Casos de Uso - Etapa 8
 
 left to right direction
 
@@ -7,46 +7,38 @@ actor "Jogador" as J
 
 rectangle "Sistema Bolonha e Milano" {
 
-    ' Funcionalidades principais
     usecase "Iniciar novo jogo" as UC1
     usecase "Consultar status da cidade" as UC2
 
-    ' Mercado - Etapa 3
     usecase "Acessar mercado" as UC3
     usecase "Comprar graos" as UC4
     usecase "Vender graos" as UC5
     usecase "Comprar terras" as UC6
     usecase "Vender terras" as UC7
 
-    ' Agricultura - Etapa 4
     usecase "Acessar agricultura" as UC8
     usecase "Processar colheita" as UC9
     usecase "Distribuir alimentos" as UC10
 
-    ' Governo - Etapa 5
     usecase "Acessar governo" as UC11
     usecase "Arrecadar impostos" as UC12
     usecase "Definir taxa de imposto" as UC13
     usecase "Definir nivel de justica" as UC14
 
-    ' Construcoes - Etapa 6
+    usecase "Consultar informacoes do jogo" as UC15
+    usecase "Sair do jogo" as UC16
+
     usecase "Acessar construcoes e soldados" as UC17
     usecase "Recrutar soldados" as UC18
     usecase "Construir" as UC19
 
-    ' Rodadas e vitoria - Etapa 7
     usecase "Encerrar turno" as UC20
     usecase "Fechar ano" as UC21
     usecase "Verificar promocoes" as UC22
     usecase "Consultar classificacao" as UC23
     usecase "Declarar vencedor" as UC24
-
-    ' Outras funcionalidades
-    usecase "Consultar informacoes do jogo" as UC15
-    usecase "Sair do jogo" as UC16
 }
 
-' Funcionalidades acessadas pelo jogador
 J --> UC1
 J --> UC2
 J --> UC3
@@ -58,26 +50,21 @@ J --> UC23
 J --> UC15
 J --> UC16
 
-' Operacoes do mercado
 UC4 ..> UC3 : <<extend>>
 UC5 ..> UC3 : <<extend>>
 UC6 ..> UC3 : <<extend>>
 UC7 ..> UC3 : <<extend>>
 
-' Operacoes da agricultura
 UC9 ..> UC8 : <<extend>>
 UC10 ..> UC8 : <<extend>>
 
-' Operacoes do governo
 UC12 ..> UC11 : <<extend>>
 UC13 ..> UC11 : <<extend>>
 UC14 ..> UC11 : <<extend>>
 
-' Operacoes de construcoes e soldados
 UC18 ..> UC17 : <<extend>>
 UC19 ..> UC17 : <<extend>>
 
-' Operacoes da Etapa 7
 UC21 ..> UC20 : <<extend>>
 UC21 ..> UC22 : <<include>>
 UC21 ..> UC23 : <<include>>

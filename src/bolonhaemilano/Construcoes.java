@@ -1,3 +1,5 @@
+package bolonhaemilano;
+
 public class Construcoes {
 
     // Custos definidos pelas regras do jogo

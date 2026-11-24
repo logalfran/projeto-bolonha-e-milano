@@ -1,7 +1,9 @@
 @startuml
-title Bolonha e Milano - Diagrama de Classes - Etapa 7
+title Bolonha e Milano - Diagrama de Classes - Etapa 8
 
 skinparam classAttributeIconSize 0
+
+package bolonhaemilano {
 
 class Main {
     + {static} main(args: String[]): void
@@ -20,13 +22,14 @@ class Menu {
 
     + executar(): void
     - exibirOpcoes(): void
+    - lerInteiro(): int
     - lerOpcao(): int
+    - lerQuantidade(): int
+    - exigirJogoEmAndamento(): boolean
     - processarOpcao(opcao: int): void
-    - verificarPartida(): boolean
     - iniciarNovoJogo(): void
     - exibirStatus(): void
     - abrirMercado(): void
-    - lerQuantidade(): int
     - comprarGraos(): void
     - venderGraos(): void
     - comprarTerras(): void
@@ -156,7 +159,6 @@ class Construcoes {
     + construir(cidade: Cidade, qtd: int): boolean
 }
 
-' Nova classe da Etapa 7
 class Nobreza {
     - {static} PESO_CONSTRUCAO: int
     - {static} PESO_SOLDADO: int
@@ -169,7 +171,6 @@ class Nobreza {
     + verificarPromocao(cidade: Cidade): boolean
 }
 
-' Nova classe da Etapa 7
 class Partida {
     + {static} MAXIMO_JOGADORES: int
     - {static} ANO_FINAL: int
@@ -187,7 +188,23 @@ class Partida {
     + determinarVencedor(nobreza: Nobreza): Cidade
 }
 
-' Relacionamentos entre as classes
+class Testes {
+    - {static} aprovados: int
+    - {static} reprovados: int
+
+    - {static} verificar(descricao: String, condicao: boolean): void
+    - {static} novaCidade(): Cidade
+    - {static} testarCidade(): void
+    - {static} testarMercado(): void
+    - {static} testarAgricultura(): void
+    - {static} testarGoverno(): void
+    - {static} testarConstrucoes(): void
+    - {static} testarJogadorENobreza(): void
+    - {static} testarPartida(): void
+    + {static} main(args: String[]): void
+}
+
+}
 
 Main ..> Menu : inicia
 
@@ -200,17 +217,26 @@ Menu --> Governo : utiliza
 Menu --> Construcoes : utiliza
 Menu --> Nobreza : utiliza
 
-Partida "1" o-- "0..4" Cidade : cidades participantes
+Partida "1" o-- "0..4" Cidade : participantes
 Partida ..> Nobreza : verifica promocoes e vitoria
 
 Cidade "1" --> "1" Jogador : governante
 
 Mercado ..> Cidade : negocia recursos
 Agricultura ..> Cidade : cultiva e alimenta
-Governo ..> Cidade : administra impostos e justica
-Construcoes ..> Cidade : recruta e constroi
+Governo ..> Cidade : administra impostos
+Construcoes ..> Cidade : gerencia construcoes
 
 Nobreza ..> Cidade : calcula prestigio
 Nobreza ..> Jogador : promove
+
+Testes ..> Cidade : testa
+Testes ..> Jogador : testa
+Testes ..> Mercado : testa
+Testes ..> Agricultura : testa
+Testes ..> Governo : testa
+Testes ..> Construcoes : testa
+Testes ..> Nobreza : testa
+Testes ..> Partida : testa
 
 @enduml

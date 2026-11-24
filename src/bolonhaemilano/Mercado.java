@@ -1,3 +1,5 @@
+package bolonhaemilano;
+
 public class Mercado {
 
     // Preços fixos provisórios para esta implementação.

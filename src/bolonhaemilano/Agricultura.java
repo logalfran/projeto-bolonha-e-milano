@@ -1,3 +1,5 @@
+package bolonhaemilano;
+
 public class Agricultura {
 
     private static final int HECTARES_POR_SERVO = 5;

@@ -1,3 +1,5 @@
+package bolonhaemilano;
+
 public class Jogador {
 
     private String nome;

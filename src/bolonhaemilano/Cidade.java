@@ -1,3 +1,5 @@
+package bolonhaemilano;
+
 public class Cidade {
 
     // Informacoes da cidade
